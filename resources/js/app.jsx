@@ -1,24 +1,23 @@
 import '../css/app.css';
 
-import { createInertiaApp } from '@inertiajs/react';
-import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 import { initializeTheme } from './hooks/use-appearance';
+import { BrowserRouter } from 'react-router-dom';
+import { AppRouter } from './router';
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
-
-createInertiaApp({
-    title: (title) => `${title} - ${appName}`,
-    resolve: (name) => resolvePageComponent(`./pages/${name}.jsx`, import.meta.glob('./pages/**/*.jsx')),
-    setup({ el, App, props }) {
-        const root = createRoot(el);
-
-        root.render(<App {...props} />);
-    },
-    progress: {
-        color: '#4B5563',
-    },
-});
-
-// This will set light / dark mode on load...
 initializeTheme();
+
+const container = document.getElementById('app');
+if (!container) {
+    throw new Error('Root container not found');
+}
+
+const root = createRoot(container);
+
+root.render(
+    <BrowserRouter>
+        {/* <AuthProvider> */}
+        <AppRouter />
+        {/* </AuthProvider> */}
+    </BrowserRouter>
+);

@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { Link } from '@inertiajs/react';
+import { Link } from 'react-router-dom';
 
 export default function TextLink({ className = '', children, ...props }) {
     return (

@@ -2,14 +2,14 @@ import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { Link } from '@inertiajs/react';
 import { BookOpen, Folder, LayoutGrid } from 'lucide-react';
 import AppLogo from './app-logo';
+import { Link } from 'react-router-dom';
 
 const mainNavItems = [
     {
         title: 'Dashboard',
-        url: '/dashboard',
+        url: '/',
         icon: LayoutGrid,
     },
 ];
@@ -34,7 +34,7 @@ export function AppSidebar() {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href="/dashboard" prefetch>
+                            <Link to="/dashboard" prefetch='intent'>
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>

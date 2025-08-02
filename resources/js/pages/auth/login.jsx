@@ -1,31 +1,53 @@
-import { Head, useForm } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';
-
+import { useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import InputError from '@/components/input-error';
-import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+// import { useAuth } from '@/contexts/auth-context';
 import AuthLayout from '@/layouts/auth-layout';
 
-export default function Login({ status, canResetPassword }) {
-    const { data, setData, post, processing, errors, reset } = useForm({
+export default function Login() {
+    // const { login } = useAuth();
+    const navigate = useNavigate();
+    const location = useLocation();
+    const [data, setData] = useState({
         email: '',
         password: '',
         remember: false,
     });
+    const [processing, setProcessing] = useState(false);
+    const [errors, setErrors] = useState({});
 
-    const submit = (e) => {
+    const successMessage = location.state?.message;
+
+    const submit = async (e) => {
         e.preventDefault();
-        post(route('login'), {
-            onFinish: () => reset('password'),
-        });
+        setProcessing(true);
+        setErrors({});
+
+        try {
+            // await login(data.email, data.password);
+            console.log('Logging in with:', data);
+            navigate('/dashboard');
+        } catch (error) {
+            if (error.errors) {
+                setErrors(error.errors);
+            } else {
+                setErrors({
+                    email: error.message || 'Login failed',
+                });
+            }
+        } finally {
+            setProcessing(false);
+        }
     };
 
     return (
         <AuthLayout title="Log in to your account" description="Enter your email and password below to log in">
-            <Head title="Log in" />
+            {successMessage && <div className="mb-4 text-center text-sm font-medium text-green-600">{successMessage}</div>}
 
             <form className="flex flex-col gap-6" onSubmit={submit}>
                 <div className="grid gap-6">
@@ -39,7 +61,7 @@ export default function Login({ status, canResetPassword }) {
                             tabIndex={1}
                             autoComplete="email"
                             value={data.email}
-                            onChange={(e) => setData('email', e.target.value)}
+                            onChange={(e) => setData((prev) => ({ ...prev, email: e.target.value }))}
                             placeholder="email@example.com"
                         />
                         <InputError message={errors.email} />
@@ -48,11 +70,9 @@ export default function Login({ status, canResetPassword }) {
                     <div className="grid gap-2">
                         <div className="flex items-center">
                             <Label htmlFor="password">Password</Label>
-                            {canResetPassword && (
-                                <TextLink href={route('password.request')} className="ml-auto text-sm" tabIndex={5}>
-                                    Forgot password?
-                                </TextLink>
-                            )}
+                            <Link to="/forgot-password" className="text-muted-foreground hover:text-foreground ml-auto text-sm" tabIndex={5}>
+                                Forgot password?
+                            </Link>
                         </div>
                         <Input
                             id="password"
@@ -61,7 +81,7 @@ export default function Login({ status, canResetPassword }) {
                             tabIndex={2}
                             autoComplete="current-password"
                             value={data.password}
-                            onChange={(e) => setData('password', e.target.value)}
+                            onChange={(e) => setData((prev) => ({ ...prev, password: e.target.value }))}
                             placeholder="Password"
                         />
                         <InputError message={errors.password} />
@@ -72,7 +92,7 @@ export default function Login({ status, canResetPassword }) {
                             id="remember"
                             name="remember"
                             checked={data.remember}
-                            onClick={() => setData('remember', !data.remember)}
+                            onCheckedChange={(checked) => setData((prev) => ({ ...prev, remember: !!checked }))}
                             tabIndex={3}
                         />
                         <Label htmlFor="remember">Remember me</Label>
@@ -86,13 +106,11 @@ export default function Login({ status, canResetPassword }) {
 
                 <div className="text-muted-foreground text-center text-sm">
                     Don't have an account?{' '}
-                    <TextLink href={route('register')} tabIndex={5}>
+                    <Link to="/register" className="text-foreground hover:underline" tabIndex={5}>
                         Sign up
-                    </TextLink>
+                    </Link>
                 </div>
             </form>
-
-            {status && <div className="mb-4 text-center text-sm font-medium text-green-600">{status}</div>}
         </AuthLayout>
     );
 }
